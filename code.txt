@@ -1,0 +1,283 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MainMenuGui"
+screenGui.Parent = game.CoreGui
+
+-- Hauptmenü-Frame
+local mainMenu = Instance.new("Frame")
+mainMenu.Size = UDim2.new(0, 300, 0, 400)
+mainMenu.Position = UDim2.new(1, -310, 1, -410)
+mainMenu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+mainMenu.Visible = false
+mainMenu.Parent = screenGui
+
+-- Schließen-Button für Hauptmenü
+local closeButtonMainMenu = Instance.new("TextButton")
+closeButtonMainMenu.Size = UDim2.new(0, 30, 0, 30)
+closeButtonMainMenu.Position = UDim2.new(1, -35, 0, 5)
+closeButtonMainMenu.Text = "X"
+closeButtonMainMenu.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButtonMainMenu.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+closeButtonMainMenu.Font = Enum.Font.SourceSans
+closeButtonMainMenu.TextSize = 18
+closeButtonMainMenu.Parent = mainMenu
+
+-- Funktion zum Schließen des Hauptmenüs
+closeButtonMainMenu.MouseButton1Click:Connect(function()
+    mainMenu.Visible = false
+end)
+
+-- Menü-Button (MMAew) zum Ein- und Ausklappen
+local menuButton = Instance.new("TextButton")
+menuButton.Size = UDim2.new(0, 50, 0, 50)
+menuButton.Position = UDim2.new(1, -60, 1, -60) -- Unten rechts
+menuButton.Text = "≡"
+menuButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+menuButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+menuButton.Font = Enum.Font.SourceSans
+menuButton.TextSize = 24
+menuButton.Parent = screenGui
+
+-- Toggle Funktion für das Menü
+menuButton.MouseButton1Click:Connect(function()
+    mainMenu.Visible = not mainMenu.Visible
+end)
+
+-- Zweiter MMAew Button (links unten)
+local menuButtonLeft = Instance.new("TextButton")
+menuButtonLeft.Size = UDim2.new(0, 50, 0, 50)
+menuButtonLeft.Position = UDim2.new(0, 10, 1, -60) -- Unten links
+menuButtonLeft.Text = "≡"
+menuButtonLeft.TextColor3 = Color3.fromRGB(255, 255, 255)
+menuButtonLeft.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+menuButtonLeft.Font = Enum.Font.SourceSans
+menuButtonLeft.TextSize = 24
+menuButtonLeft.Parent = screenGui
+
+-- Neues Menü für den zweiten MMAew Button
+local playerMenu = Instance.new("Frame")
+playerMenu.Size = UDim2.new(0, 300, 0, 400)
+playerMenu.Position = UDim2.new(0, 10, 1, -410)
+playerMenu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+playerMenu.Visible = false
+playerMenu.Parent = screenGui
+
+-- Schließen-Button für Spieler-Menu
+local closeButtonPlayerMenu = Instance.new("TextButton")
+closeButtonPlayerMenu.Size = UDim2.new(0, 30, 0, 30)
+closeButtonPlayerMenu.Position = UDim2.new(1, -35, 0, 5)
+closeButtonPlayerMenu.Text = "X"
+closeButtonPlayerMenu.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButtonPlayerMenu.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+closeButtonPlayerMenu.Font = Enum.Font.SourceSans
+closeButtonPlayerMenu.TextSize = 18
+closeButtonPlayerMenu.Parent = playerMenu
+
+-- Funktion zum Schließen des Spieler-Menüs
+closeButtonPlayerMenu.MouseButton1Click:Connect(function()
+    playerMenu.Visible = false
+end)
+
+-- Liste der Spieler
+local playerListLayout = Instance.new("UIListLayout")
+playerListLayout.Parent = playerMenu
+playerListLayout.Padding = UDim.new(0, 10)
+
+-- Toggle Funktion für das zweite Menü
+menuButtonLeft.MouseButton1Click:Connect(function()
+    playerMenu.Visible = not playerMenu.Visible
+    -- Spielerbuttons für das zweite Menü erstellen
+    if playerMenu.Visible then
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player ~= game.Players.LocalPlayer then
+                local playerButton = Instance.new("TextButton")
+                playerButton.Size = UDim2.new(1, -10, 0, 40)
+                playerButton.Text = "Teleport to " .. player.Name
+                playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                playerButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                playerButton.Font = Enum.Font.SourceSans
+                playerButton.TextSize = 18
+                playerButton.Parent = playerMenu
+
+                -- Teleport-Funktion für den Spielerbutton
+                playerButton.MouseButton1Click:Connect(function()
+                    local localPlayer = game.Players.LocalPlayer
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        localPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+                    end
+                end)
+            end
+        end
+    end
+end)
+
+-- Teleport and Hit Button
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.new(1, -10, 0, 40)
+teleportButton.Position = UDim2.new(0, 5, 0, 60)
+teleportButton.Text = "Teleport and Hit"
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+teleportButton.Font = Enum.Font.SourceSans
+teleportButton.TextSize = 18
+teleportButton.Parent = mainMenu
+
+teleportButton.MouseButton1Click:Connect(function()
+    local players = game.Players:GetPlayers()
+    local localPlayer = game.Players.LocalPlayer
+
+    -- Filtere alle Spieler, die nicht der lokale Spieler sind und die ein Character haben
+    local otherPlayers = {}
+    for _, player in ipairs(players) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(otherPlayers, player)
+        end
+    end
+
+    -- Funktion zum "Durchrattern" durch alle Spieler
+    local function teleportAndHit(player)
+        -- Teleportiere den lokalen Spieler zum aktuellen Zielspieler
+        localPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+        task.wait(0.1) -- Kurze Verzögerung für den Effekt
+
+        -- Feuere den ClickDetector des Zielspielers ab, falls vorhanden
+        local clickDetector = player.Character:FindFirstChildWhichIsA("ClickDetector")
+        if clickDetector then
+            fireclickdetector(clickDetector)
+        end
+    end
+
+    -- Gehe durch alle Spieler nacheinander
+    for _, player in ipairs(otherPlayers) do
+        teleportAndHit(player)
+    end
+end)
+
+-- ESP Button
+local espButton = Instance.new("TextButton")
+espButton.Size = UDim2.new(1, -10, 0, 40)
+espButton.Position = UDim2.new(0, 5, 0, 160)
+espButton.Text = "Toggle ESP"
+espButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+espButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+espButton.Font = Enum.Font.SourceSans
+espButton.TextSize = 18
+espButton.Parent = mainMenu
+
+local espEnabled = false
+
+-- Funktion für das Hinzufügen von ESP zu Spielern
+local function createESP(player)
+    -- BillboardGui für den ESP
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Size = UDim2.new(0, 200, 0, 50)
+    billboardGui.StudsOffset = Vector3.new(0, 2, 0)
+    billboardGui.AlwaysOnTop = true
+    billboardGui.Parent = player.Character
+
+    -- TextLabel für den ESP
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = player.Name
+    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextSize = 14
+    textLabel.Parent = billboardGui
+
+    -- Verfolge den Charakter neu, falls er respawnt
+    player.CharacterAdded:Connect(function(character)
+        -- Stelle sicher, dass der ESP weiterhin über dem Kopf bleibt
+        if character:FindFirstChild("Head") then
+            billboardGui.Adornee = character.Head
+        end
+    end)
+
+    -- Stelle sicher, dass der ESP immer über dem Kopf bleibt
+    if player.Character and player.Character:FindFirstChild("Head") then
+        billboardGui.Adornee = player.Character.Head
+    end
+end
+
+-- Toggle ESP-Button
+espButton.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    if espEnabled then
+        -- ESP für alle Spieler aktivieren
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                createESP(player)
+            end
+        end
+    else
+        -- ESP für alle Spieler deaktivieren
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            if player.Character and player.Character:FindFirstChild("BillboardGui") then
+                player.Character:FindFirstChild("BillboardGui"):Destroy()
+            end
+        end
+    end
+end)
+
+-- Invisibility Button
+local invisibilityButton = Instance.new("TextButton")
+invisibilityButton.Size = UDim2.new(1, -10, 0, 40)
+invisibilityButton.Position = UDim2.new(0, 5, 0, 110)
+invisibilityButton.Text = "Toggle Invisibility"
+invisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+invisibilityButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+invisibilityButton.Font = Enum.Font.SourceSans
+invisibilityButton.TextSize = 18
+invisibilityButton.Parent = mainMenu
+
+local invisible = false
+
+invisibilityButton.MouseButton1Click:Connect(function()
+    invisible = not invisible
+    local localPlayer = game.Players.LocalPlayer
+    if invisible then
+        -- Mache den Spieler unsichtbar
+        localPlayer.Character:FindFirstChild("Humanoid").Transparency = 1
+        localPlayer.Character:FindFirstChild("HumanoidRootPart").Transparency = 1
+    else
+        -- Stelle die Sichtbarkeit des Spielers wieder her
+        localPlayer.Character:FindFirstChild("Humanoid").Transparency = 0
+        localPlayer.Character:FindFirstChild("HumanoidRootPart").Transparency = 0
+    end
+end)
+
+-- Noclip Button
+local noclipButton = Instance.new("TextButton")
+noclipButton.Size = UDim2.new(1, -10, 0, 40)
+noclipButton.Position = UDim2.new(0, 5, 0, 210)
+noclipButton.Text = "Toggle Noclip"
+noclipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+noclipButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+noclipButton.Font = Enum.Font.SourceSans
+noclipButton.TextSize = 18
+noclipButton.Parent = mainMenu
+
+local noclip = false
+game:GetService("RunService").Stepped:Connect(function()
+    if noclip and game.Players.LocalPlayer.Character then
+        for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+noclipButton.MouseButton1Click:Connect(function()
+    noclip = not noclip
+end)
+
+-- Owner-Button (zeigt den Besitzer an)
+local ownerButton = Instance.new("TextButton")
+ownerButton.Size = UDim2.new(1, -10, 0, 40)
+ownerButton.Position = UDim2.new(0, 5, 0, 260)
+ownerButton.Text = "Owner: Aewpuu"
+ownerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ownerButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+ownerButton.Font = Enum.Font.SourceSans
+ownerButton.TextSize = 18
+ownerButton.Parent = mainMenu
