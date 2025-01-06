@@ -30,7 +30,7 @@ end)
 local menuButton = Instance.new("TextButton")
 menuButton.Size = UDim2.new(0, 50, 0, 50)
 menuButton.Position = UDim2.new(1, -60, 1, -60) -- Unten rechts
-menuButton.Text = "≡"
+menuButton.Text = "Aewmm2"
 menuButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 menuButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 menuButton.Font = Enum.Font.SourceSans
@@ -46,7 +46,7 @@ end)
 local menuButtonLeft = Instance.new("TextButton")
 menuButtonLeft.Size = UDim2.new(0, 50, 0, 50)
 menuButtonLeft.Position = UDim2.new(0, 10, 1, -60) -- Unten links
-menuButtonLeft.Text = "≡"
+menuButtonLeft.Text = "Teleport"
 menuButtonLeft.TextColor3 = Color3.fromRGB(255, 255, 255)
 menuButtonLeft.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 menuButtonLeft.Font = Enum.Font.SourceSans
